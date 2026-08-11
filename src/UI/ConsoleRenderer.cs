@@ -2,7 +2,12 @@
 
 public class ConsoleRenderer
 {
-    public void RenderTable(List<TexItem> items, bool showFullPath, bool showCaption = false)
+    public void RenderTable(
+        List<TexItem> items,
+        bool showFullPath,
+        bool showCaption = false,
+        bool hideFile = false
+        )
     {
         if (!items.Any())
         {
@@ -24,25 +29,13 @@ public class ConsoleRenderer
             table.AddColumn(new TableColumn("[magenta]Caption[/]"));
         }
 
-        table.AddColumn(new TableColumn("[yellow]Associated File[/]"));
+        if (!hideFile)
+        {
+            table.AddColumn(new TableColumn("[yellow]Associated File[/]"));
+        }
 
         foreach (var item in items)
         {
-            string graphicDisplay = "[dim]-[/]";
-
-            if (item.HasGraphic)
-            {
-                if (showFullPath)
-                {
-                    graphicDisplay = item.GraphicPath;
-                }
-                else
-                {
-                    var pathParts = item.GraphicPath!.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                    graphicDisplay = pathParts.Length > 0 ? pathParts[^1] : item.GraphicPath;
-                }
-            }
-
             var rowData = new List<string> { item.Environment, item.labelName };
 
             if (showCaption)
@@ -62,7 +55,27 @@ public class ConsoleRenderer
                 rowData.Add(captionDisplay);
             }
 
-            rowData.Add(graphicDisplay);
+            if (!hideFile)
+            {
+                string graphicDisplay = "[dim]-[/]";
+
+                if (item.HasGraphic)
+                {
+                    if (showFullPath)
+                    {
+                        graphicDisplay = item.GraphicPath!;
+                    }
+                    else
+                    {
+                        var pathParts = item.GraphicPath!.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                        graphicDisplay = pathParts.Length > 0 ? pathParts[^1] : item.GraphicPath;
+                    }
+                }
+
+                rowData.Add(graphicDisplay);
+            }
+            
+
             table.AddRow(rowData.ToArray());
         }
 

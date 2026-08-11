@@ -1,7 +1,11 @@
 ﻿
+// Args
 bool showFullPath = args.Contains("--full") || args.Contains("-f");
 bool noCache = args.Contains("--no-cache");
 bool showCaption = args.Contains("--caption") || args.Contains("-c");
+bool hideFile = args.Contains("--no-file") || args.Contains("-nf");
+
+
 string rootDir = Directory.GetCurrentDirectory();
 
 AnsiConsole.Write(new Rule("[bold blue]lblScan[/]").LeftJustified());
@@ -21,7 +25,7 @@ try
         });
 
     var renderer = new ConsoleRenderer();
-    renderer.RenderTable(extractedData, showFullPath, showCaption);
+    renderer.RenderTable(extractedData, showFullPath, showCaption, hideFile);
 }
 catch (Exception ex)
 {
