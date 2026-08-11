@@ -5,6 +5,7 @@ using Spectre.Console;
 using lblScan;
 
 bool showFullPath = args.Contains("--full") || args.Contains("-f");
+bool noCache = args.Contains("--no-cache");
 string rootDir = Directory.GetCurrentDirectory();
 
 AnsiConsole.MarkupLine($"[dim]Scanning LaTeX project in: {rootDir}[/]\n");
@@ -12,7 +13,7 @@ AnsiConsole.MarkupLine($"[dim]Scanning LaTeX project in: {rootDir}[/]\n");
 try
 {
     var parser = new LatexParser();
-    var extractedData = parser.ParseDirectory(rootDir);
+    var extractedData = parser.ParseDirectory(rootDir, useCache: !noCache);
 
     var renderer = new ConsoleRenderer();
     renderer.RenderTable(extractedData, showFullPath);
