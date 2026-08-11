@@ -5,6 +5,13 @@ namespace lblScan.Services;
 public class CacheManager
 {
     private readonly string _cacheFilePath;
+    private const string CacheVersion = "1.1";
+
+    private class CacheContainer
+    {
+        public string Version { get; set; } = string.Empty;
+        public Dictionary<string, FileCache> Data { get; set; } = new();
+    }
 
     public CacheManager(string rootDirectory)
     {
@@ -19,7 +26,14 @@ public class CacheManager
         try
         {
             var json = File.ReadAllText(_cacheFilePath);
-            return JsonSerializer.Deserialize<Dictionary<string, FileCache>>(json) ?? new();
+            var container = JsonSerializer.Deserialize<CacheContainer>(json);
+
+            if (container == null || container.Version != CacheVersion)
+            {
+                return new Dictionary<string, FileCache>();
+            }
+
+            return container.Data ?? new Dictionary<string, FileCache>();
         }
         catch
         {
@@ -29,6 +43,12 @@ public class CacheManager
 
     public void SaveCache(Dictionary<string, FileCache> cache)
     {
+        var container = new CacheContainer
+        {
+            Version = CacheVersion,
+            Data = cache
+        };
+
         var options = new JsonSerializerOptions { WriteIndented = true };
         var json = JsonSerializer.Serialize(cache, options);
 

@@ -2,7 +2,7 @@
 
 public class ConsoleRenderer
 {
-    public void RenderTable(List<TexItem> items, bool showFullPath)
+    public void RenderTable(List<TexItem> items, bool showFullPath, bool showCaption = false)
     {
         if (!items.Any())
         {
@@ -18,6 +18,12 @@ public class ConsoleRenderer
 
         table.AddColumn(new TableColumn("[cyan]Environment[/]").Centered());
         table.AddColumn(new TableColumn("[green]Label Name[/]"));
+
+        if (showCaption)
+        {
+            table.AddColumn(new TableColumn("[magenta]Caption[/]"));
+        }
+
         table.AddColumn(new TableColumn("[yellow]Associated File[/]"));
 
         foreach (var item in items)
@@ -37,7 +43,27 @@ public class ConsoleRenderer
                 }
             }
 
-            table.AddRow(item.Environment, item.labelName, graphicDisplay);
+            var rowData = new List<string> { item.Environment, item.labelName };
+
+            if (showCaption)
+            {
+                string captionDisplay = "[dim]-[/]";
+
+                if (item.HasCaption)
+                {
+                    int maxLength = 45;
+                    string snippet = item.CaptionSnippet!.Length > maxLength
+                        ? item.CaptionSnippet.Substring(0, maxLength - 3) + "..."
+                        : item.CaptionSnippet;
+
+                    captionDisplay = Markup.Escape(snippet);
+                }
+
+                rowData.Add(captionDisplay);
+            }
+
+            rowData.Add(graphicDisplay);
+            table.AddRow(rowData.ToArray());
         }
 
         AnsiConsole.Write(table);

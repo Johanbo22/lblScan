@@ -6,7 +6,7 @@ namespace lblScan.Services;
 public class LatexParser
 {
     private readonly Regex _lexerRegex = new(
-        @"\\(?:(?<begin>begin)\s*\{(?<env>[^}]+)\}|(?<end>end)\s*\{(?<env_end>[^}]+)\}|(?<label>label)\s*\{(?<lab>[^}]+)\}|(?<inc>includegraphics)\s*(?:\[[^\]]*\])?\s*\{(?<path>[^}]+)\})",
+        @"\\(?:(?<begin>begin)\s*\{(?<env>[^}]+)\}|(?<end>end)\s*\{(?<env_end>[^}]+)\}|(?<label>label)\s*\{(?<lab>[^}]+)\}|(?<inc>includegraphics)\s*(?:\[[^\]]*\])?\s*\{(?<path>[^}]+)\}|(?<caption>caption)\s*(?:\[[^\]]*\])?\s*(?=\{(?<cap>(?>[^{}\\]+|\\.|\{(?<DEPTH>)|\}(?<-DEPTH>))*)(?(DEPTH)(?!))\}))",
         RegexOptions.Compiled | RegexOptions.Singleline);
 
     public List<TexItem> ParseDirectory(string rootDirectory, bool useCache = true)
@@ -79,12 +79,22 @@ public class LatexParser
             {
                 scopes.Peek().LatestGraphic = match.Groups["path"].Value.Trim();
             }
+            else if (match.Groups["caption"].Success)
+            {
+                var rawCaption = match.Groups["cap"].Value;
+                var cleanCaption = Regex.Replace(rawCaption, @"\s+", " ").Trim();
+                scopes.Peek().LatestCaption = cleanCaption;
+            }
             else if (match.Groups["label"].Success)
             {
                 var currentScope = scopes.Peek();
                 string labelName = match.Groups["lab"].Value.Trim();
 
-                fileItems.Add(new TexItem(currentScope.Name, labelName, currentScope.LatestGraphic ?? string.Empty));
+                fileItems.Add(new TexItem(
+                    currentScope.Name,
+                    labelName,
+                    currentScope.LatestGraphic ?? string.Empty,
+                    currentScope.LatestCaption));
             }
         }
 
