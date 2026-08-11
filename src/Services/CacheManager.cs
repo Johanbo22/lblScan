@@ -32,9 +32,21 @@ public class CacheManager
         var options = new JsonSerializerOptions { WriteIndented = true };
         var json = JsonSerializer.Serialize(cache, options);
 
+        if (File.Exists(_cacheFilePath))
+        {
+            try
+            {
+                var currentAttributes = File.GetAttributes(_cacheFilePath);
+                if (currentAttributes.HasFlag(FileAttributes.Hidden))
+                {
+                    File.SetAttributes(_cacheFilePath, currentAttributes & ~FileAttributes.Hidden);
+                }
+            }
+            catch { }
+        }
+
         File.WriteAllText(_cacheFilePath, json);
 
-        // Hide cache file
         try
         {
             var attr = File.GetAttributes(_cacheFilePath);
