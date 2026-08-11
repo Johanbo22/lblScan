@@ -1,10 +1,15 @@
 ﻿
-// Args
-bool showFullPath = args.Contains("--full") || args.Contains("-f");
-bool noCache = args.Contains("--no-cache");
-bool showCaption = args.Contains("--caption") || args.Contains("-c");
-bool hideFile = args.Contains("--no-file") || args.Contains("-nf");
+if (ArgumentParser.Help.IsMatch(args))
+{
+    var helpRenderer = new ConsoleRenderer();
+    helpRenderer.RenderHelp(ArgumentParser.AllOptions);
+    return;
+}
 
+bool showFullPath = ArgumentParser.FullPath.IsMatch(args);
+bool noCache = ArgumentParser.NoCache.IsMatch(args);
+bool showCaption = ArgumentParser.Caption.IsMatch(args);
+bool hideFile = ArgumentParser.NoFile.IsMatch(args);
 
 string rootDir = Directory.GetCurrentDirectory();
 

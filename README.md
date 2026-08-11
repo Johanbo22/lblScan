@@ -34,6 +34,7 @@ lblScan
 ```
 
 ## Arguments
+- `--help` or `-h`: View all arguments and usage information.
 - `--full` or `--f`: Full filepaths for graphics in the Associated file column. Omit to only display the file name of the graphic.
 - `--caption` or `-c`: Include a snippet of the the associated `\caption{}` text. By default this is not included.
 - `--no-file` or `-nf`: Omit the Associated file linked to the `\label`.

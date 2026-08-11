@@ -2,6 +2,35 @@
 
 public class ConsoleRenderer
 {
+    public void RenderHelp(IEnumerable<CliOption> options)
+    {
+        AnsiConsole.Write(new Rule("[bold blue]lblScan[/]").LeftJustified());
+        AnsiConsole.MarkupLine("A CLI tool to extract [green]\\label{}[/] tags from Latex projects.\n");
+        AnsiConsole.MarkupLine("[bold]Usage:[/] lblScan [grey][[OPTIONS]][/]\n");
+        AnsiConsole.MarkupLine("[bold]Options:[/]");
+
+        var grid = new Grid();
+        grid.AddColumn(new GridColumn().PadRight(2));
+        grid.AddColumn(new GridColumn().PadRight(2));
+        grid.AddColumn(new GridColumn());
+
+        foreach (var opt in options)
+        {
+            string shortDisplay = string.IsNullOrEmpty(opt.ShortName) ? "" : $"[green]{opt.ShortName}[/]";
+            string longDisplay = string.IsNullOrEmpty(opt.LongName) ? "" : $"[blue]{opt.LongName}[/]";
+
+            if (!string.IsNullOrEmpty(shortDisplay) && !string.IsNullOrEmpty(longDisplay))
+            {
+                shortDisplay += ",";
+            }
+
+            grid.AddRow(shortDisplay, longDisplay, opt.Description);
+        }
+
+        AnsiConsole.Write(grid);
+    }
+
+
     public void RenderTable(
         List<TexItem> items,
         bool showFullPath,
