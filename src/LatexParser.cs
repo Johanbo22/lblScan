@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace lblScan;
 
@@ -17,17 +19,22 @@ public class LatexParser
         foreach (var file in texFiles)
         {
             var environments = new Stack<string>();
-            string currentGraphic = null;
+            string? currentGraphic = null;
 
             foreach (var line in File.ReadLines(file))
             {
-                if (_beginRegex.Match(line) is { Success: true } bMatch)
+                string cleanLine = StripComments(line);
+
+                if (string.IsNullOrWhiteSpace(cleanLine))
+                    continue;
+
+                if (_beginRegex.Match(cleanLine) is { Success: true } bMatch)
                     environments.Push(bMatch.Groups[1].Value);
 
-                if (_graphicsRegex.Match(line) is { Success: true } gMatch)
+                if (_graphicsRegex.Match(cleanLine) is { Success: true } gMatch)
                     currentGraphic = gMatch.Groups[1].Value;
 
-                if (_labelRegex.Match(line) is { Success: true } lMatch)
+                if (_labelRegex.Match(cleanLine) is { Success: true} lMatch)
                 {
                     string labelName = lMatch.Groups[1].Value;
                     string currentEnv = environments.Count > 0 ? environments.Peek() : "document";
@@ -36,7 +43,7 @@ public class LatexParser
                     currentGraphic = null;
                 }
 
-                if (_endRegex.Match(line) is { Success: true } eMatch && environments.Count > 0)
+                if (_endRegex.Match(cleanLine) is { Success: true} eMatch && environments.Count > 0)
                 {
                     environments.Pop();
                     currentGraphic = null;
@@ -44,5 +51,28 @@ public class LatexParser
             }
         }
         return extractedData;
+    }
+
+    private static string StripComments(string line)
+    {
+        bool escaped = false;
+
+        for (int i = 0; i < line.Length; i++)
+        {
+            if (line[i] == '\\')
+            {
+                escaped = !escaped;
+            }
+            else if (line[i] == '%' && !escaped)
+            {
+                return line.Substring(0, i);
+            }
+            else
+            {
+                escaped = false;
+            }
+        }
+
+        return line;
     }
 }
