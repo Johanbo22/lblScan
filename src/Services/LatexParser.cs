@@ -1,10 +1,7 @@
-﻿using Spectre.Console;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace lblScan;
+namespace lblScan.Services;
 
 public class LatexParser
 {

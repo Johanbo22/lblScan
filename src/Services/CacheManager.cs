@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace lblScan;
+namespace lblScan.Services;
 
 public class CacheManager
 {

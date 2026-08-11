@@ -1,4 +1,4 @@
-﻿namespace lblScan;
+﻿namespace lblScan.Models;
 
 /// <summary>
 /// Represents the state of a single Latex environment scope

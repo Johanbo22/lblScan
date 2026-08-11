@@ -1,4 +1,4 @@
-﻿namespace lblScan;
+﻿namespace lblScan.Models;
 
 public record TexItem(string Environment, string labelName, string? GraphicPath)
 {

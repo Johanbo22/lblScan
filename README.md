@@ -34,5 +34,5 @@ lblScan
 ```
 
 ## Arguments
-
-Append a `--full` or a `-f` to have full filepaths included for graphics in the result. Omit to only display the file name of the graphic.
+- `--full` or `--f`: Full filepaths for graphics in the Associated file column. Omit to only display the file name of the graphic
+- `--no-cache`: Force a complete re-scan of the project. By default `lblScan` writes a hidden `.lblscan_cache.json` file and will only re parse `.tex` files that have been modified since last execution.

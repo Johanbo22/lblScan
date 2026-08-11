@@ -1,4 +1,4 @@
-﻿namespace lblScan;
+﻿namespace lblScan.Models;
 
 /// <summary>
 /// Represents the cached data for a single latex file

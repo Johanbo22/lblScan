@@ -1,6 +1,4 @@
-﻿using Spectre.Console;
-
-namespace lblScan;
+﻿namespace lblScan.UI;
 
 public class ConsoleRenderer
 {

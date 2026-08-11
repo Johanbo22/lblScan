@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Spectre.Console;
-using lblScan;
-
+﻿
 bool showFullPath = args.Contains("--full") || args.Contains("-f");
 bool noCache = args.Contains("--no-cache");
 string rootDir = Directory.GetCurrentDirectory();
