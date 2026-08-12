@@ -11,6 +11,7 @@ bool noCache = ArgumentParser.NoCache.IsMatch(args);
 bool showCaption = ArgumentParser.Caption.IsMatch(args);
 bool hideFile = ArgumentParser.NoFile.IsMatch(args);
 bool onlyGraphics = ArgumentParser.OnlyGraphics.IsMatch(args);
+bool isInteractive = ArgumentParser.Interactive.IsMatch(args);
 string? envFilter = ArgumentParser.Environment.GetValue(args);
 
 string rootDir = Directory.GetCurrentDirectory();
@@ -46,8 +47,17 @@ try
         }
     }
 
-    var renderer = new ConsoleRenderer();
-    renderer.RenderTable(extractedData, showFullPath, showCaption, hideFile);
+    if (isInteractive)
+    {
+        var interactiveRenderer = new InteractiveRenderer();
+        interactiveRenderer.RenderInteractiveGrid(extractedData, showFullPath, showCaption, hideFile);
+    }
+    else
+    {
+        var renderer = new ConsoleRenderer();
+        renderer.RenderTable(extractedData, showFullPath, showCaption, hideFile);  
+    }
+
 }
 catch (Exception ex)
 {

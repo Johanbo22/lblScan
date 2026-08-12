@@ -35,6 +35,7 @@ lblScan
 
 ## Arguments
 - `--help` or `-h`: View all arguments and usage information.
+- `--interactive` or `-i`: Launch an interactive table to filter results by typing, use arrow keys to navigate, and hit Enter to copy a label to your clipboard.
 - `--full` or `--f`: Full filepaths for graphics in the Associated file column. Omit to only display the file name of the graphic.
 - `--caption` or `-c`: Include a snippet of the the associated `\caption{}` text. By default this is not included.
 - `--no-file` or `-nf`: Omit the Associated file linked to the `\label`.

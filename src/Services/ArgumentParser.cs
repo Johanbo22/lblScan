@@ -13,9 +13,10 @@ public static class ArgumentParser
     public static readonly CliOption NoCache = new("", "--no-cache", "Force a complete re-scan of the project. By default a cache file is written at first execution");
     public static readonly CliOption OnlyGraphics = new("-g", "--graphics", "Only display labels that have an associated graphic file attached");
     public static readonly CliOption Environment = new("-e", "--env", "Only display labels within a specific environment (figure, table, tikzpicture etc.)");
+    public static readonly CliOption Interactive = new("-i", "--interactive", "Launch lblScan in interactive mode");
 
     public static readonly IReadOnlyList<CliOption> AllOptions = new[]
     {
-        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment
+        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive
     };
 }
