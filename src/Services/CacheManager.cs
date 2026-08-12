@@ -5,7 +5,7 @@ namespace lblScan.Services;
 public class CacheManager
 {
     private readonly string _cacheFilePath;
-    private const string CacheVersion = "1.1";
+    private const string CacheVersion = "1.3";
 
     private class CacheContainer
     {

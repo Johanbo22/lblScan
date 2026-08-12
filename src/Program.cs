@@ -12,6 +12,7 @@ bool showCaption = ArgumentParser.Caption.IsMatch(args);
 bool hideFile = ArgumentParser.NoFile.IsMatch(args);
 bool onlyGraphics = ArgumentParser.OnlyGraphics.IsMatch(args);
 bool isInteractive = ArgumentParser.Interactive.IsMatch(args);
+bool showTree = ArgumentParser.Tree.IsMatch(args);
 string? envFilter = ArgumentParser.Environment.GetValue(args);
 
 string rootDir = Directory.GetCurrentDirectory();
@@ -51,6 +52,11 @@ try
     {
         var interactiveRenderer = new InteractiveRenderer();
         interactiveRenderer.RenderInteractiveGrid(extractedData, showFullPath, showCaption, hideFile);
+    }
+    else if (showTree)
+    {
+        var renderer = new ConsoleRenderer();
+        renderer.RenderTree(extractedData, showFullPath, showCaption, hideFile);
     }
     else
     {

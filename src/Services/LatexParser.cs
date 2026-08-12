@@ -34,7 +34,7 @@ public class LatexParser
             }
             else
             {
-                var items = ParseFile(file);
+                var items = ParseFile(file, relativePath);
                 extractedData.AddRange(items);
                 updatedCache[relativePath] = new FileCache(lastModified, items);
                 parsedFiles++;
@@ -53,11 +53,26 @@ public class LatexParser
         return extractedData;
     }
 
-    private List<TexItem> ParseFile(string filePath)
+    private List<TexItem> ParseFile(string filePath, string relativePath)
     {
         var fileItems = new List<TexItem>();
         var content = File.ReadAllText(filePath);
         var cleanContent = StripComments(content);
+
+        var lineStarts = new List<int> { 0 };
+        for (int i = 0; i < cleanContent.Length; i++)
+        {
+            if (cleanContent[i] == '\n')
+                lineStarts.Add(i + 1);
+        }
+
+        int GetLineNumber(int matchIndex)
+        {
+            int index = lineStarts.BinarySearch(matchIndex);
+            if (index < 0)
+                index = ~index - 1;
+            return index + 1;
+        }
 
         var scopes = new Stack<EnvironmentScope>();
         scopes.Push(new EnvironmentScope("document"));
@@ -93,6 +108,8 @@ public class LatexParser
                 fileItems.Add(new TexItem(
                     currentScope.Name,
                     labelName,
+                    relativePath,
+                    GetLineNumber(match.Index),
                     currentScope.LatestGraphic ?? string.Empty,
                     currentScope.LatestCaption));
             }
