@@ -11,6 +11,7 @@ bool noCache = ArgumentParser.NoCache.IsMatch(args);
 bool showCaption = ArgumentParser.Caption.IsMatch(args);
 bool hideFile = ArgumentParser.NoFile.IsMatch(args);
 bool onlyGraphics = ArgumentParser.OnlyGraphics.IsMatch(args);
+string? envFilter = ArgumentParser.Environment.GetValue(args);
 
 string rootDir = Directory.GetCurrentDirectory();
 
@@ -33,6 +34,16 @@ try
     if (onlyGraphics)
     {
         extractedData = extractedData.Where(item => item.HasGraphic).ToList();
+    }
+
+    if (!string.IsNullOrEmpty(envFilter))
+    {
+        extractedData = extractedData.Where(item => item.Environment.Equals(envFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        if (!extractedData.Any())
+        {
+            AnsiConsole.MarkupLine($"\n[yellow]No labels found within the '{Markup.Escape(envFilter)}' environment.[/]");
+        }
     }
 
     var renderer = new ConsoleRenderer();

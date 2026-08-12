@@ -39,4 +39,5 @@ lblScan
 - `--caption` or `-c`: Include a snippet of the the associated `\caption{}` text. By default this is not included.
 - `--no-file` or `-nf`: Omit the Associated file linked to the `\label`.
 - `--graphics` or `-g`: Only display rows that have an associated graphics file attached.
+- `--env <name>` or `-e <name>`: Only display labels within a specific environment type (`table`, `figure`, `subfigure`, `tikzpicture`, etc.).  
 - `--no-cache`: Force a complete re-scan of the project. By default `lblScan` writes a hidden `.lblscan_cache.json` file and will only re parse `.tex` files that have been modified since last execution.
