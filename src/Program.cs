@@ -10,6 +10,7 @@ bool showFullPath = ArgumentParser.FullPath.IsMatch(args);
 bool noCache = ArgumentParser.NoCache.IsMatch(args);
 bool showCaption = ArgumentParser.Caption.IsMatch(args);
 bool hideFile = ArgumentParser.NoFile.IsMatch(args);
+bool onlyGraphics = ArgumentParser.OnlyGraphics.IsMatch(args);
 
 string rootDir = Directory.GetCurrentDirectory();
 
@@ -28,6 +29,11 @@ try
         {
             extractedData = parser.ParseDirectory(rootDir, useCache: !noCache);
         });
+
+    if (onlyGraphics)
+    {
+        extractedData = extractedData.Where(item => item.HasGraphic).ToList();
+    }
 
     var renderer = new ConsoleRenderer();
     renderer.RenderTable(extractedData, showFullPath, showCaption, hideFile);

@@ -7,7 +7,7 @@ Iterates through all sub-directories of a LaTeX project and compiles a table wit
 ## Requirements
 This tool requires the **[.NET 10.0 SDK](https://dotnet.microsoft.com/en-us/download)** or newer installed
 
-## Usage
+## Installation and usage
 1. Clone repository
 
 ```
@@ -38,4 +38,5 @@ lblScan
 - `--full` or `--f`: Full filepaths for graphics in the Associated file column. Omit to only display the file name of the graphic.
 - `--caption` or `-c`: Include a snippet of the the associated `\caption{}` text. By default this is not included.
 - `--no-file` or `-nf`: Omit the Associated file linked to the `\label`.
+- `--graphics` or `-g`: Only display rows that have an associated graphics file attached.
 - `--no-cache`: Force a complete re-scan of the project. By default `lblScan` writes a hidden `.lblscan_cache.json` file and will only re parse `.tex` files that have been modified since last execution.

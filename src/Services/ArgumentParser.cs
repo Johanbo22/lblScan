@@ -11,9 +11,10 @@ public static class ArgumentParser
     public static readonly CliOption Caption = new("-c", "--caption", "Include a snippet of the associated \\caption{} text. By default this is not included");
     public static readonly CliOption NoFile = new("-nf", "--no-file", "Omit the Associated File linked to the \\label.");
     public static readonly CliOption NoCache = new("", "--no-cache", "Force a complete re-scan of the project. By default a cache file is written at first execution");
+    public static readonly CliOption OnlyGraphics = new("-g", "--graphics", "Only display labels that have an associated graphic file attached");
 
     public static readonly IReadOnlyList<CliOption> AllOptions = new[]
     {
-        Help, FullPath, Caption, NoFile, NoCache
+        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics
     };
 }
