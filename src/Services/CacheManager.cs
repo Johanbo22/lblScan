@@ -49,8 +49,8 @@ public class CacheManager
             Data = cache
         };
 
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        var json = JsonSerializer.Serialize(cache, options);
+        var options = new JsonSerializerOptions { WriteIndented = false };
+        var json = JsonSerializer.Serialize(container, options);
 
         if (File.Exists(_cacheFilePath))
         {

@@ -90,15 +90,7 @@ public class ConsoleRenderer
 
                 if (item.HasGraphic)
                 {
-                    if (showFullPath)
-                    {
-                        graphicDisplay = item.GraphicPath!;
-                    }
-                    else
-                    {
-                        var pathParts = item.GraphicPath!.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                        graphicDisplay = pathParts.Length > 0 ? pathParts[^1] : item.GraphicPath;
-                    }
+                    graphicDisplay = showFullPath ? item.GraphicPath! : GetFileName(item.GraphicPath!);
                 }
 
                 rowData.Add(graphicDisplay);
@@ -109,6 +101,12 @@ public class ConsoleRenderer
         }
 
         AnsiConsole.Write(table);
+    }
+
+    private static string GetFileName(string path)
+    {
+        var pathParts = path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+        return pathParts.Length > 0 ? pathParts[^1] : path;
     }
 
     public void RenderTree(List<TexItem> items, bool showFullPath, bool showCaption = false, bool hideFile = false)

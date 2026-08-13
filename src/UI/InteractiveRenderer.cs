@@ -47,7 +47,7 @@ public class InteractiveRenderer
             AnsiConsole.Cursor.Show();
     }
 
-    private List<TexItem> GetFilteredItems(List<TexItem> items, string filter)
+    private static List<TexItem> GetFilteredItems(List<TexItem> items, string filter)
     {
         if (string.IsNullOrWhiteSpace(filter))
             return items.ToList();
@@ -60,7 +60,7 @@ public class InteractiveRenderer
         ).ToList();
     }
 
-    private void EnsureValidSelection(ref int selectedIndex, int itemCount)
+    private static void EnsureValidSelection(ref int selectedIndex, int itemCount)
     {
         if (selectedIndex >= itemCount)
         {
@@ -120,7 +120,7 @@ public class InteractiveRenderer
         return (startIdx, endIdx);
     }
 
-    private void AddRowToTable(Table table, TexItem item, bool isSelected, bool showFullPath, bool showCaption, bool hideFile)
+    private static void AddRowToTable(Table table, TexItem item, bool isSelected, bool showFullPath, bool showCaption, bool hideFile)
     {
         string style = isSelected ? "[invert]" : "";
         string endStyle = isSelected ? "[/]" : "";
@@ -143,19 +143,19 @@ public class InteractiveRenderer
         table.AddRow(rowData.ToArray());
     }
 
-    private string FormatCaption(TexItem item)
+    private static string FormatCaption(TexItem item)
     {
         if (!item.HasCaption) return "-";
 
-        int maxL = 40;
-        string snippet = item.CaptionSnippet!.Length > maxL
-            ? item.CaptionSnippet.Substring(0, maxL - 3) + "..."
+        const int MaxLength = 40;
+        string snippet = item.CaptionSnippet!.Length > MaxLength
+            ? item.CaptionSnippet.Substring(0, MaxLength - 3) + "..."
             : item.CaptionSnippet;
 
         return Markup.Escape(snippet);
     }
 
-    private string FormatGraphic(TexItem item, bool showFullPath)
+    private static string FormatGraphic(TexItem item, bool showFullPath)
     {
         if (!item.HasGraphic) return "-";
         if (showFullPath) return Markup.Escape(item.GraphicPath!);
@@ -168,7 +168,7 @@ public class InteractiveRenderer
     {
         if (!Console.KeyAvailable)
         {
-            Thread.Sleep(20);
+            Thread.Sleep(16);
             return true;
         }
 
