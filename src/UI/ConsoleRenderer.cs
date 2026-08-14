@@ -44,6 +44,18 @@ public class ConsoleRenderer
             return;
         }
 
+        var table = BuildBaseTable(showCaption, hideFile);
+
+        foreach (var item in items)
+        {
+            var rowData = BuildTableRow(item, showFullPath, showCaption, hideFile);
+            table.AddRow(rowData.ToArray());
+        }
+
+        AnsiConsole.Write(table);
+    }
+    private static Table BuildBaseTable(bool showCaption, bool hideFile)
+    {
         var table = new Table()
             .Border(TableBorder.Rounded)
             .BorderColor(Color.Grey)
@@ -63,44 +75,45 @@ public class ConsoleRenderer
             table.AddColumn(new TableColumn("[yellow]Associated File[/]"));
         }
 
-        foreach (var item in items)
+        return table;
+    }
+
+    private List<string> BuildTableRow(TexItem item, bool showFullPath, bool showCaption, bool hideFile)
+    {
+        var rowData = new List<string> { item.Environment, item.labelName };
+
+        if (showCaption)
         {
-            var rowData = new List<string> { item.Environment, item.labelName };
-
-            if (showCaption)
-            {
-                string captionDisplay = "[dim]-[/]";
-
-                if (item.HasCaption)
-                {
-                    int maxLength = 45;
-                    string snippet = item.CaptionSnippet!.Length > maxLength
-                        ? item.CaptionSnippet.Substring(0, maxLength - 3) + "..."
-                        : item.CaptionSnippet;
-
-                    captionDisplay = Markup.Escape(snippet);
-                }
-
-                rowData.Add(captionDisplay);
-            }
-
-            if (!hideFile)
-            {
-                string graphicDisplay = "[dim]-[/]";
-
-                if (item.HasGraphic)
-                {
-                    graphicDisplay = showFullPath ? item.GraphicPath! : GetFileName(item.GraphicPath!);
-                }
-
-                rowData.Add(graphicDisplay);
-            }
-            
-
-            table.AddRow(rowData.ToArray());
+            rowData.Add(FormatCaptionDisplay(item));
         }
 
-        AnsiConsole.Write(table);
+        if (!hideFile)
+        {
+            rowData.Add(FormatGraphicDisplay(item, showFullPath));
+        }
+
+        return rowData;
+    }
+
+    private static string FormatCaptionDisplay(TexItem item)
+    {
+        if (!item.HasCaption)
+            return "[dim]-[/]";
+
+        int maxLength = 45;
+        string snippet = item.CaptionSnippet!.Length > maxLength
+            ? item.CaptionSnippet.Substring(0, maxLength - 3) + "..."
+            : item.CaptionSnippet;
+
+        return Markup.Escape(snippet);
+    }
+
+    private static string FormatGraphicDisplay(TexItem item, bool showFullPath)
+    {
+        if (!item.HasGraphic)
+            return "[dim]-[/]";
+
+        return showFullPath ? item.GraphicPath! : GetFileName(item.GraphicPath);
     }
 
     private static string GetFileName(string path)
@@ -124,82 +137,114 @@ public class ConsoleRenderer
 
         foreach (var group in groupedItems)
         {
-            var pathParts = group.Key.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-
-            TreeNode? parentNode = null;
-            string accumulatedPath = "";
-
-            for (int i = 0; i < pathParts.Length - 1; i++)
-            {
-                // Check depth limit
-                if (maxDepth.HasValue && (i + 1) >= maxDepth.Value)
-                {
-                    break;
-                }
-
-                accumulatedPath = string.IsNullOrEmpty(accumulatedPath) ? pathParts[i] : accumulatedPath + "/" + pathParts[i];
-
-                if (!directoryNodes.TryGetValue(accumulatedPath, out var dirNode))
-                {
-                    string dirMarkup = $"[blue]{Markup.Escape(pathParts[i])}/[/]";
-                    dirNode = parentNode == null ? root.AddNode(dirMarkup) : parentNode.AddNode(dirMarkup);
-
-                    directoryNodes[accumulatedPath] = dirNode;
-                }
-
-                parentNode = dirNode;
-            }
-
-            // Check if we should add file node based on depth
-            if (maxDepth.HasValue && pathParts.Length > maxDepth.Value)
-            {
-                continue;
-            } 
-
-            string fileName = pathParts.Length > 0 ? pathParts[^1] : group.Key;
-            string fileMarkup = $"[yellow]{Markup.Escape(fileName)}[/]";
-            var fileNode = parentNode == null ? root.AddNode(fileMarkup) : parentNode.AddNode(fileMarkup);
-
-            foreach (var item in group)
-            {
-                string nodeText = $"[green]{Markup.Escape(item.labelName)}[/] [dim]({Markup.Escape(item.Environment)}, line {item.LineNumber})[/]";
-
-                List<string> details = new();
-                if (showCaption && item.HasCaption)
-                {
-                    int maxLength = 45;
-                    string snippet = item.CaptionSnippet!.Length > maxLength
-                        ? item.CaptionSnippet.Substring(0, maxLength - 3) + "..."
-                        : item.CaptionSnippet;
-                    details.Add($"[magenta]Caption:[/] {Markup.Escape(snippet)}");
-                }
-
-                if (!hideFile && item.HasGraphic)
-                {
-                    string graphicDisplay = item.GraphicPath!;
-                    if (!showFullPath)
-                    {
-                        var parts = item.GraphicPath!.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                        graphicDisplay = parts.Length > 0 ? parts[^1] : item.GraphicPath!;
-                    }
-                    details.Add($"[yellow]Graphic:[/] {Markup.Escape(graphicDisplay)}");
-                }
-
-                if (details.Any())
-                {
-                    var labelNode = fileNode.AddNode(nodeText);
-                    foreach (var detail in details)
-                    {
-                        labelNode.AddNode(detail);
-                    }
-                }
-                else
-                {
-                    fileNode.AddNode(nodeText);
-                }
-            }
+            AddFileToTree(root, directoryNodes, group, showFullPath, showCaption, hideFile, maxDepth);
         }
 
         AnsiConsole.Write(root);
+    }
+
+    private void AddFileToTree(
+        Tree root,
+        Dictionary<string, TreeNode> directoryNodes,
+        IGrouping<string, TexItem> group,
+        bool showFullPath,
+        bool showCaption,
+        bool hideFile,
+        int? maxDepth
+        )
+    {
+        var pathParts = group.Key.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+
+        TreeNode? parentNode = null;
+        string accumulatedPath = "";
+
+        for (int i = 0; i < pathParts.Length - 1; i++)
+        {
+            if (ShouldSkipDueToDepth(i + 1, maxDepth))
+            {
+                break;
+            }
+
+            accumulatedPath = string.IsNullOrEmpty(accumulatedPath) ? pathParts[i] : accumulatedPath + "/" + pathParts[i];
+
+            if (!directoryNodes.TryGetValue(accumulatedPath, out var dirNode))
+            {
+                string dirMarkup = $"[blue]{Markup.Escape(pathParts[i])}/[/]";
+                dirNode = parentNode == null ? root.AddNode(dirMarkup) : parentNode.AddNode(dirMarkup);
+                directoryNodes[accumulatedPath] = dirNode;
+            }
+
+            parentNode = dirNode;
+        }
+
+        if (ShouldSkipDueToDepth(pathParts.Length, maxDepth))
+        {
+            return;
+        }
+
+        string fileName = pathParts.Length > 0 ? pathParts[^1] : group.Key;
+        string fileMarkup = $"[yellow]{Markup.Escape(fileName)}[/]";
+        var fileNode = parentNode == null ? root.AddNode(fileMarkup) : parentNode.AddNode(fileMarkup);
+
+        foreach (var item in group)
+        {
+            AddLabelToFileNode(fileNode, item, showCaption, hideFile, showFullPath);
+        }
+    }
+
+    private static bool ShouldSkipDueToDepth(int currentDepth, int? maxDepth)
+    {
+        return maxDepth.HasValue && currentDepth >= maxDepth.Value;
+    }
+
+    private static void AddLabelToFileNode(TreeNode fileNode, TexItem item, bool showCaption, bool hideFile, bool showFullPath)
+    {
+        string nodeText = $"[green]{Markup.Escape(item.labelName)}[/] [dim] ({Markup.Escape(item.Environment)}, line {item.LineNumber})[/]";
+
+        List<string> details = BuildLabelDetails(item, showCaption, hideFile, showFullPath);
+
+        if (details.Any())
+        {
+            var labelNode = fileNode.AddNode(nodeText);
+            foreach (var detail in details)
+            {
+                labelNode.AddNode(detail);
+            }
+        }
+        else
+        {
+            fileNode.AddNode(nodeText);
+        }
+    }
+
+    private static List<string> BuildLabelDetails(TexItem item, bool showCaption, bool hideFile, bool showFullpath)
+    {
+        var details = new List<string>();
+
+        if (showCaption && item.HasCaption)
+        {
+            int maxLength = 45;
+            string snippet = item.CaptionSnippet!.Length > maxLength
+                ? item.CaptionSnippet.Substring(0, maxLength - 3) + "..."
+                : item.CaptionSnippet;
+            details.Add($"[magenta]Caption:[/] {Markup.Escape(snippet)}");
+        }
+
+        if (!hideFile && item.HasGraphic)
+        {
+            string graphicDisplay = FormatGraphicPath(item.GraphicPath!, showFullpath);
+            details.Add($"[yellow]Graphic:[/] {Markup.Escape(graphicDisplay)}");
+        }
+
+        return details;
+    }
+
+    private static string FormatGraphicPath(string graphicPath, bool showFullPath)
+    {
+        if (showFullPath)
+            return graphicPath;
+
+        var parts = graphicPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length > 0 ? parts[^1] : graphicPath;
     }
 }

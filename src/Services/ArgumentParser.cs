@@ -21,4 +21,20 @@ public static class ArgumentParser
     {
         Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth
     };
+
+    public static bool IsHelp(string[] args) => Help.IsMatch(args);
+    public static bool IsFullPath(string[] args) => FullPath.IsMatch(args);
+    public static bool IsNoCache(string[] args) => NoCache.IsMatch(args);
+    public static bool IsCaption(string[] args) => Caption.IsMatch(args);
+    public static bool IsNoFile(string[] args) => NoFile.IsMatch(args);
+    public static bool IsOnlyGraphics(string[] args) => OnlyGraphics.IsMatch(args);
+    public static bool IsInteractive(string[] args) => Interactive.IsMatch(args);
+    public static bool IsTree(string[] args) => Tree.IsMatch(args);
+    public static string? GetEnvironmentFilter(string[] args) => Environment.GetValue(args);
+    public static int? GetTreeDepth(string[] args)
+    {
+        string? value = TreeDepth.GetValue(args);
+        return !string.IsNullOrEmpty(value) && int.TryParse(value, out int depth) ? depth : null;
+    }
+
 }
