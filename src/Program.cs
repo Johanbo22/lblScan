@@ -14,6 +14,12 @@ bool onlyGraphics = ArgumentParser.OnlyGraphics.IsMatch(args);
 bool isInteractive = ArgumentParser.Interactive.IsMatch(args);
 bool showTree = ArgumentParser.Tree.IsMatch(args);
 string? envFilter = ArgumentParser.Environment.GetValue(args);
+string? treeDepthValue = ArgumentParser.TreeDepth.GetValue(args);
+int? maxTreeDepth = null;
+if (!string.IsNullOrEmpty(treeDepthValue) && int.TryParse(treeDepthValue, out int depth))
+{
+    maxTreeDepth = depth;
+}
 
 string rootDir = Directory.GetCurrentDirectory();
 
@@ -56,7 +62,7 @@ try
     else if (showTree)
     {
         var renderer = new ConsoleRenderer();
-        renderer.RenderTree(extractedData, showFullPath, showCaption, hideFile);
+        renderer.RenderTree(extractedData, showFullPath, showCaption, hideFile, maxTreeDepth);
     }
     else
     {

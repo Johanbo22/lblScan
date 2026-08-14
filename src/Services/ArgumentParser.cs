@@ -15,9 +15,10 @@ public static class ArgumentParser
     public static readonly CliOption Environment = new("-e", "--env", "Only display labels within a specific environment (figure, table, tikzpicture etc.)");
     public static readonly CliOption Interactive = new("-i", "--interactive", "Launch lblScan in interactive mode");
     public static readonly CliOption Tree = new("-t", "--tree", "Display labels in a hierarchy grouped by file");
+    public static readonly CliOption TreeDepth = new("", "--tree-depth", "Limit the depth of the tree output. Only applies with --tree");
 
     public static readonly IReadOnlyList<CliOption> AllOptions = new[]
     {
-        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree
+        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth
     };
 }

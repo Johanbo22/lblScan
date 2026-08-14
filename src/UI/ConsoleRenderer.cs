@@ -109,7 +109,7 @@ public class ConsoleRenderer
         return pathParts.Length > 0 ? pathParts[^1] : path;
     }
 
-    public void RenderTree(List<TexItem> items, bool showFullPath, bool showCaption = false, bool hideFile = false)
+    public void RenderTree(List<TexItem> items, bool showFullPath, bool showCaption = false, bool hideFile = false, int? maxDepth = null)
     {
         if (!items.Any())
         {
@@ -131,6 +131,12 @@ public class ConsoleRenderer
 
             for (int i = 0; i < pathParts.Length - 1; i++)
             {
+                // Check depth limit
+                if (maxDepth.HasValue && (i + 1) >= maxDepth.Value)
+                {
+                    break;
+                }
+
                 accumulatedPath = string.IsNullOrEmpty(accumulatedPath) ? pathParts[i] : accumulatedPath + "/" + pathParts[i];
 
                 if (!directoryNodes.TryGetValue(accumulatedPath, out var dirNode))
@@ -143,6 +149,12 @@ public class ConsoleRenderer
 
                 parentNode = dirNode;
             }
+
+            // Check if we should add file node based on depth
+            if (maxDepth.HasValue && pathParts.Length > maxDepth.Value)
+            {
+                continue;
+            } 
 
             string fileName = pathParts.Length > 0 ? pathParts[^1] : group.Key;
             string fileMarkup = $"[yellow]{Markup.Escape(fileName)}[/]";
