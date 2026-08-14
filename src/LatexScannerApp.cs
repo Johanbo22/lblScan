@@ -57,7 +57,9 @@ public class LatexScannerApp
             IsInteractive = ArgumentParser.Interactive.IsMatch(args),
             ShowTree = ArgumentParser.Tree.IsMatch(args),
             EnvironmentFilter = ArgumentParser.Environment.GetValue(args),
-            MaxTreeDepth = ParseTreeDepth(args)
+            MaxTreeDepth = ParseTreeDepth(args),
+            SortAscending = ArgumentParser.IsSortAsc(args),
+            SortDescending = ArgumentParser.IsSortDesc(args)
         };
     }
 
@@ -91,6 +93,15 @@ public class LatexScannerApp
         if (!string.IsNullOrEmpty(options.EnvironmentFilter))
         {
             extractedData = FilterByEnvironment(extractedData, options.EnvironmentFilter);
+        }
+
+        if (options.SortAscending)
+        {
+            extractedData = extractedData.OrderBy(item => item.labelName).ToList();
+        }
+        else if (options.SortDescending)
+        {
+            extractedData = extractedData.OrderByDescending(item => item.labelName).ToList();
         }
 
         return extractedData;
@@ -153,4 +164,6 @@ public record ScanOptions
     public bool ShowTree { get; init; }
     public string? EnvironmentFilter { get; init; }
     public int? MaxTreeDepth { get; init; }
+    public bool SortAscending { get; init; }
+    public bool SortDescending { get; init; }
 }
