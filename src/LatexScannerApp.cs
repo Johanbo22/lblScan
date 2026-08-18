@@ -142,7 +142,7 @@ public class LatexScannerApp
 
         if (!filtered.Any())
         {
-            _logger.LogWarning($"No labels found within in the '{environment}' environment");
+            _logger.LogWarning($"No labels found within the '{environment}' environment");
             AnsiConsole.MarkupLine($"\n[yellow]No labels found within the '{Markup.Escape(environment)}' environment.[/]");
             return filtered;
         }

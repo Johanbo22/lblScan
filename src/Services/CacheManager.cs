@@ -74,19 +74,20 @@ public class CacheManager
 
             SetSecureFilePermissions(tempFilePath);
 
-            File.Replace(tempFilePath, _cacheFilePath, null, true);
+            if (File.Exists(_cacheFilePath))
+            {
+                File.Replace(tempFilePath, _cacheFilePath, null, true);
+                return;
+            }
+
+            File.Move(tempFilePath, _cacheFilePath);
         }
         catch
         {
-            try
+            if (File.Exists(tempFilePath))
             {
-                if (File.Exists(tempFilePath))
-                {
-                    File.Delete(tempFilePath);
-                }
+                try { File.Delete(tempFilePath); } catch { }
             }
-            catch { }
-
             throw;
         }
     }

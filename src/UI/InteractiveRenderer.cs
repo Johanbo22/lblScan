@@ -170,7 +170,6 @@ public class InteractiveRenderer
         }
 
         var key = Console.ReadKey(intercept: true);
-
         switch (key.Key)
         {
             case ConsoleKey.Escape:
@@ -184,20 +183,15 @@ public class InteractiveRenderer
                 selectedIndex = Math.Min(filteredItems.Count - 1, selectedIndex + 1);
                 break;
 
-            case ConsoleKey.Enter:
-                if (filteredItems.Count > 0)
-                {
-                    var selectedItem = filteredItems[selectedIndex];
-                    var sanitizedLabelName = SanitizeLabelForClipboard(selectedItem.LabelName);
-                    ClipboardService.SetText(sanitizedLabelName);
-                    AnsiConsole.MarkupLine($"\n[bold green]Copied '{Markup.Escape(sanitizedLabelName)}' to clipboard[/]");
-                    return false;
-                }
-                break;
+            case ConsoleKey.Enter when filteredItems.Count > 0:
+                var selectedItem = filteredItems[selectedIndex];
+                var sanitizedLabelName = SanitizeLabelForClipboard(selectedItem.LabelName);
+                ClipboardService.SetText(sanitizedLabelName);
+                AnsiConsole.MarkupLine($"\n[bold green]Copied '{Markup.Escape(sanitizedLabelName)} to clipboard.[/]");
+                return false;
 
-            case ConsoleKey.Backspace:
-                if (filter.Length > 0)
-                    filter = filter[..^1];
+            case ConsoleKey.Backspace when filter.Length > 0:
+                filter = filter[..^1];
                 break;
 
             default:
@@ -216,15 +210,15 @@ public class InteractiveRenderer
         if (string.IsNullOrEmpty(labelName))
             return string.Empty;
 
-        var sanitized = new System.Text.StringBuilder(labelName.Length);
+        var sanitizedStringForClipboardCopy = new System.Text.StringBuilder(labelName.Length);
         foreach (char c in labelName)
         {
-            if (char.IsLetterOrDigit(c) || c == '_' || c == '-' || c == ':')
+            if (char.IsLetterOrDigit(c) || c is '_' or '-' or ':' or '.')
             {
-                sanitized.Append(c);
+                sanitizedStringForClipboardCopy.Append(c);
             }
         }
 
-        return sanitized.ToString();
+        return sanitizedStringForClipboardCopy.ToString();
     }
 }

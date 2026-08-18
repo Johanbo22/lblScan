@@ -226,13 +226,4 @@ public class ConsoleRenderer
 
         return details;
     }
-
-    private static string FormatGraphicPath(string graphicPath, bool showFullPath)
-    {
-        if (showFullPath)
-            return graphicPath;
-
-        var parts = graphicPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length > 0 ? parts[^1] : graphicPath;
-    }
 }

@@ -96,23 +96,30 @@ public class LatexParser
         if (match.Groups["begin"].Success)
         {
             scopes.Push(new EnvironmentScope(match.Groups["env"].Value.Trim()));
+            return;
         }
-        else if (match.Groups["end"].Success)
+
+        if (match.Groups["end"].Success && scopes.Count > 1)
         {
-            if (scopes.Count > 1)
-                scopes.Pop();
+            scopes.Pop();
+            return;
         }
-        else if (match.Groups["inc"].Success)
+
+        if (match.Groups["inc"].Success)
         {
             scopes.Peek().LatestGraphic = match.Groups["path"].Value.Trim();
+            return;
         }
-        else if (match.Groups["caption"].Success)
+
+        if (match.Groups["caption"].Success)
         {
             var rawCaption = match.Groups["cap"].Value;
             var cleanCaption = Regex.Replace(rawCaption, @"\s+", " ").Trim();
             scopes.Peek().LatestCaption = cleanCaption;
+            return;
         }
-        else if (match.Groups["label"].Success)
+
+        if (match.Groups["label"].Success)
         {
             AddLabel(match, scopes, fileItems, relativePath, lineStarts);
         }
@@ -148,13 +155,15 @@ public class LatexParser
 
         foreach (char c in text)
         {
+            if (inComment && (c == '\n' || c == '\r'))
+            {
+                inComment = false;
+                commentStringBuilder.Append(c);
+                continue;
+            }
+
             if (inComment)
             {
-                if (c == '\n' || c == '\r')
-                {
-                    inComment = false;
-                    commentStringBuilder.Append(c);
-                }
                 continue;
             }
 
@@ -164,7 +173,7 @@ public class LatexParser
                 commentStringBuilder.Append(c);
                 continue;
             }
-            
+
             if (c == '%' && !escaped)
             {
                 inComment = true;
