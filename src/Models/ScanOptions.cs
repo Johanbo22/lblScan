@@ -2,6 +2,7 @@
 
 public record ScanOptions
 {
+    public string TargetDirectory { get; init; } = Directory.GetCurrentDirectory();
     public bool ShowFullPath { get; init; }
     public bool NoCache { get; init; }
     public bool ShowCaption { get; init; }

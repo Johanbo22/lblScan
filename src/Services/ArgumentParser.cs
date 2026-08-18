@@ -6,6 +6,7 @@
 
 public static class ArgumentParser
 {
+    public static readonly CliOption Path = new("-p", "--path", "Specify a path to a directory containing a Latex project");
     public static readonly CliOption Version = new("-v", "--version", "Display the version number of lblScan");
     public static readonly CliOption Help = new("-h", "--help", "Show help and usage information");
     public static readonly CliOption FullPath = new("-f", "--full", "Show full filepaths for graphics in the Associated File column. Omit to only display the file name");
@@ -23,8 +24,19 @@ public static class ArgumentParser
 
     public static readonly IReadOnlyList<CliOption> AllOptions = new[]
     {
-        Version, Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth, SortAsc, SortDesc, CsvOutput
+        Path, Version, Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth, SortAsc, SortDesc, CsvOutput
     };
+
+    public static string GetTargetPath(string[] args)
+    {
+        string? specifiedPath = Path.GetValue(args);
+        if (!string.IsNullOrEmpty(specifiedPath))
+        {
+            return System.IO.Path.GetFullPath(specifiedPath);
+        }
+
+        return Directory.GetCurrentDirectory();
+    }
 
     public static bool IsVersion(string[] args) => Version.IsMatch(args);
     public static bool IsHelp(string[] args) => Help.IsMatch(args);

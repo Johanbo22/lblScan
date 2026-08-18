@@ -37,6 +37,7 @@ lblScan
 The following flags alter the provided output:
 - `--version` or `-v`: View the current version of lblScan.
 - `--help` or `-h`: View all arguments and usage information.
+- `--path <dir>` or `-p <dir>`: Target a specified directory containing a Latex project.
 - `--interactive` or `-i`: Launch an interactive table to filter results by typing, use arrow keys to navigate, and hit Enter to copy a label to your clipboard.
 - `--tree` or `-t`: Display labels in a hierarchy tree grouped by the `.tex` file they were found within.
 - `--tree-depth <value>`: Limit the tree view to a certain directory depth. 

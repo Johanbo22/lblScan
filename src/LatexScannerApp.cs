@@ -40,7 +40,14 @@ public class LatexScannerApp
             }
 
             var options = ParseOptions(args);
-            string rootDir = Directory.GetCurrentDirectory();
+            string rootDir = options.TargetDirectory;
+
+            if (!Directory.Exists(rootDir))
+            {
+                _logger.LogError($"The provided directory does not exists: {rootDir}");
+                AnsiConsole.MarkupLine($"[red]Directory not found:[/] {Markup.Escape(rootDir)}");
+                return;
+            }
 
             _logger.LogInfo($"Scanning Latex project in: {rootDir} directory");
             AnsiConsole.Write(new Rule("[bold blue]lblScan[/]").LeftJustified());
@@ -81,6 +88,7 @@ public class LatexScannerApp
 
         return new ScanOptions
         {
+            TargetDirectory = ArgumentParser.GetTargetPath(args),
             ShowFullPath = ArgumentParser.FullPath.IsMatch(args),
             NoCache = ArgumentParser.NoCache.IsMatch(args),
             ShowCaption = ArgumentParser.Caption.IsMatch(args),
