@@ -2,6 +2,12 @@
 
 public class ConsoleRenderer
 {
+    public void RenderVersion()
+    {
+        var version = typeof(ConsoleRenderer).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
+        AnsiConsole.MarkupLine($"[bold blue]lblScan[/] version [green]{version}[/]");
+    }
+
     public void RenderHelp(IEnumerable<CliOption> options)
     {
         AnsiConsole.Write(new Rule("[bold blue]lblScan[/]").LeftJustified());

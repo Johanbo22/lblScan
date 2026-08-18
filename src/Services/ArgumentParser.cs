@@ -6,6 +6,7 @@
 
 public static class ArgumentParser
 {
+    public static readonly CliOption Version = new("-v", "--version", "Display the version number of lblScan");
     public static readonly CliOption Help = new("-h", "--help", "Show help and usage information");
     public static readonly CliOption FullPath = new("-f", "--full", "Show full filepaths for graphics in the Associated File column. Omit to only display the file name");
     public static readonly CliOption Caption = new("-c", "--caption", "Include a snippet of the associated \\caption{} text. By default this is not included");
@@ -22,9 +23,10 @@ public static class ArgumentParser
 
     public static readonly IReadOnlyList<CliOption> AllOptions = new[]
     {
-        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth, SortAsc, SortDesc, CsvOutput
+        Version, Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth, SortAsc, SortDesc, CsvOutput
     };
 
+    public static bool IsVersion(string[] args) => Version.IsMatch(args);
     public static bool IsHelp(string[] args) => Help.IsMatch(args);
     public static bool IsFullPath(string[] args) => FullPath.IsMatch(args);
     public static bool IsNoCache(string[] args) => NoCache.IsMatch(args);

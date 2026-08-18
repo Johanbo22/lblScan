@@ -35,6 +35,7 @@ lblScan
 
 ## Arguments
 The following flags alter the provided output:
+- `--version` or `-v`: View the current version of lblScan.
 - `--help` or `-h`: View all arguments and usage information.
 - `--interactive` or `-i`: Launch an interactive table to filter results by typing, use arrow keys to navigate, and hit Enter to copy a label to your clipboard.
 - `--tree` or `-t`: Display labels in a hierarchy tree grouped by the `.tex` file they were found within.

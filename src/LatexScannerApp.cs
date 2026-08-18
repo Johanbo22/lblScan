@@ -25,6 +25,13 @@ public class LatexScannerApp
         _logger.LogDebug($"Arguments provided: {string.Join(" ", args)}");
         try
         {
+            if (ArgumentParser.Version.IsMatch(args))
+            {
+                _logger.LogInfo("Version argument provided, displaying tool version");
+                _consoleRenderer.RenderVersion();
+                return;
+            }
+
             if (ArgumentParser.Help.IsMatch(args))
             {
                 _logger.LogInfo("Help Argument provided, displaying all arguments and usage information");
