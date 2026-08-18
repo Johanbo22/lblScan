@@ -16,14 +16,17 @@ public record CliOption(string ShortName, string LongName, string Description)
     {
         for (int i = 0; i < args.Length; i++)
         {
-            if ((!string.IsNullOrEmpty(ShortName) && args[i] == ShortName) ||
-                (!string.IsNullOrEmpty(LongName) && args[i] == LongName))
+            bool isMatch = (!string.IsNullOrEmpty(ShortName) && args[i] == ShortName) ||
+                           (!string.IsNullOrEmpty(LongName) && args[i] == LongName);
+
+            if (!isMatch)
             {
-                // Ensure that next string exists and is not an arg flag
-                if (i + 1 < args.Length && !args[i + 1].StartsWith("-"))
-                {
-                    return args[i + 1];
-                }
+                continue;
+            }
+
+            if (i + 1 < args.Length && !args[i + 1].StartsWith("-"))
+            {
+                return args[i + 1];
             }
         }
         return null;

@@ -142,7 +142,7 @@ public class LatexParser
 
     private static string StripComments(string text)
     {
-        var sb = new StringBuilder(text.Length);
+        var commentStringBuilder = new StringBuilder(text.Length);
         bool escaped = false;
         bool inComment = false;
 
@@ -153,7 +153,7 @@ public class LatexParser
                 if (c == '\n' || c == '\r')
                 {
                     inComment = false;
-                    sb.Append(c);
+                    commentStringBuilder.Append(c);
                 }
                 continue;
             }
@@ -161,20 +161,21 @@ public class LatexParser
             if (c == '\\')
             {
                 escaped = !escaped;
-                sb.Append(c);
+                commentStringBuilder.Append(c);
+                continue;
             }
-            else if (c == '%' && !escaped)
+            
+            if (c == '%' && !escaped)
             {
                 inComment = true;
+                continue;
             }
-            else
-            {
-                escaped = false;
-                sb.Append(c);
-            }
+
+            escaped = false;
+            commentStringBuilder.Append(c);
         }
 
-        return sb.ToString();
+        return commentStringBuilder.ToString();
     }
 
     private static bool IsWithinRootDirectory(string filePath, string rootDirectory)

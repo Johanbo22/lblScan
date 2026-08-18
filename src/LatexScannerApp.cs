@@ -82,21 +82,11 @@ public class LatexScannerApp
             IsInteractive = ArgumentParser.Interactive.IsMatch(args),
             ShowTree = ArgumentParser.Tree.IsMatch(args),
             EnvironmentFilter = ArgumentParser.Environment.GetValue(args),
-            MaxTreeDepth = ParseTreeDepth(args),
+            MaxTreeDepth = ArgumentParser.GetTreeDepth(args),
             SortAscending = ArgumentParser.IsSortAsc(args),
             SortDescending = ArgumentParser.IsSortDesc(args),
             CsvOutput = ArgumentParser.IsCsvOutput(args)
         };
-    }
-
-    private static int? ParseTreeDepth(string[] args)
-    {
-        string? treeDepthValue = ArgumentParser.TreeDepth.GetValue(args);
-        if (!string.IsNullOrEmpty(treeDepthValue) && int.TryParse(treeDepthValue, out int depth))
-        {
-            return depth;
-        }
-        return null;
     }
 
     private List<TexItem> ScanProject(string rootDir, ScanOptions options)
@@ -132,13 +122,13 @@ public class LatexScannerApp
 
         if (options.SortAscending)
         {
-            _logger.LogDebug("Sorting by labelName in ascending order");
-            extractedData = extractedData.OrderBy(item => item.labelName).ToList();
+            _logger.LogDebug("Sorting by LabelName in ascending order");
+            extractedData = extractedData.OrderBy(item => item.LabelName).ToList();
         }
         else if (options.SortDescending)
         {
-            _logger.LogDebug("Sorting by labelName in descending order");
-            extractedData = extractedData.OrderByDescending(item => item.labelName).ToList();
+            _logger.LogDebug("Sorting by LabelName in descending order");
+            extractedData = extractedData.OrderByDescending(item => item.LabelName).ToList();
         }
 
         _logger.LogDebug($"Final result of scan: {extractedData.Count} entries");
@@ -205,20 +195,4 @@ public class LatexScannerApp
         _logger.LogInfo("Rendering complete");
     }
 
-}
-
-public record ScanOptions
-{
-    public bool ShowFullPath { get; init; }
-    public bool NoCache { get; init; }
-    public bool ShowCaption { get; init; }
-    public bool HideFile { get; init; }
-    public bool OnlyGraphics { get; init; }
-    public bool IsInteractive { get; init; }
-    public bool ShowTree { get; init; }
-    public string? EnvironmentFilter { get; init; }
-    public int? MaxTreeDepth { get; init; }
-    public bool SortAscending { get; init; }
-    public bool SortDescending { get; init; }
-    public bool CsvOutput { get; init; }
 }

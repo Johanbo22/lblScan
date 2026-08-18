@@ -40,7 +40,7 @@ public static class CsvExporter
         var fields = new List<string>
         {
             EscapeCsvField(item.Environment),
-            EscapeCsvField(item.labelName)
+            EscapeCsvField(item.LabelName)
         };
 
         if (showCaption)
@@ -50,7 +50,7 @@ public static class CsvExporter
 
         if (!hideFile)
         {
-            fields.Add(item.HasGraphic ? EscapeCsvField(FormatGraphicPath(item.GraphicPath!, showFullPath)) : "");
+            fields.Add(item.HasGraphic ? EscapeCsvField(FormatHelper.FormatGraphicPath(item.GraphicPath!, showFullPath)) : "");
         }
 
 
@@ -70,16 +70,5 @@ public static class CsvExporter
         }
 
         return value;
-    }
-
-    private static string FormatGraphicPath(string graphicPath, bool showFullPath)
-    {
-        if (showFullPath)
-        {
-            return graphicPath;
-        }
-
-        var parts = graphicPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length > 0 ? parts[^1] : graphicPath;
     }
 }

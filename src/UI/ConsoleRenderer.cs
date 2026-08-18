@@ -80,7 +80,7 @@ public class ConsoleRenderer
 
     private List<string> BuildTableRow(TexItem item, bool showFullPath, bool showCaption, bool hideFile)
     {
-        var rowData = new List<string> { item.Environment, item.labelName };
+        var rowData = new List<string> { item.Environment, item.LabelName };
 
         if (showCaption)
         {
@@ -100,10 +100,7 @@ public class ConsoleRenderer
         if (!item.HasCaption)
             return "[dim]-[/]";
 
-        int maxLength = 45;
-        string snippet = item.CaptionSnippet!.Length > maxLength
-            ? item.CaptionSnippet.Substring(0, maxLength - 3) + "..."
-            : item.CaptionSnippet;
+        string snippet = FormatHelper.Truncate(item.CaptionSnippet, 45);
 
         return Markup.Escape(snippet);
     }
@@ -113,13 +110,7 @@ public class ConsoleRenderer
         if (!item.HasGraphic)
             return "[dim]-[/]";
 
-        return showFullPath ? item.GraphicPath! : GetFileName(item.GraphicPath);
-    }
-
-    private static string GetFileName(string path)
-    {
-        var pathParts = path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-        return pathParts.Length > 0 ? pathParts[^1] : path;
+        return FormatHelper.FormatGraphicPath(item.GraphicPath!, showFullPath);
     }
 
     public void RenderTree(List<TexItem> items, bool showFullPath, bool showCaption = false, bool hideFile = false, int? maxDepth = null)
@@ -199,7 +190,7 @@ public class ConsoleRenderer
 
     private static void AddLabelToFileNode(TreeNode fileNode, TexItem item, bool showCaption, bool hideFile, bool showFullPath)
     {
-        string nodeText = $"[green]{Markup.Escape(item.labelName)}[/] [dim] ({Markup.Escape(item.Environment)}, line {item.LineNumber})[/]";
+        string nodeText = $"[green]{Markup.Escape(item.LabelName)}[/] [dim] ({Markup.Escape(item.Environment)}, line {item.LineNumber})[/]";
 
         List<string> details = BuildLabelDetails(item, showCaption, hideFile, showFullPath);
 
@@ -223,16 +214,13 @@ public class ConsoleRenderer
 
         if (showCaption && item.HasCaption)
         {
-            int maxLength = 45;
-            string snippet = item.CaptionSnippet!.Length > maxLength
-                ? item.CaptionSnippet.Substring(0, maxLength - 3) + "..."
-                : item.CaptionSnippet;
+            string snippet = FormatHelper.Truncate(item.CaptionSnippet, 45);
             details.Add($"[magenta]Caption:[/] {Markup.Escape(snippet)}");
         }
 
         if (!hideFile && item.HasGraphic)
         {
-            string graphicDisplay = FormatGraphicPath(item.GraphicPath!, showFullpath);
+            string graphicDisplay = FormatHelper.FormatGraphicPath(item.GraphicPath!, showFullpath);
             details.Add($"[yellow]Graphic:[/] {Markup.Escape(graphicDisplay)}");
         }
 

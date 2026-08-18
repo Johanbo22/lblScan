@@ -54,7 +54,7 @@ public class InteractiveRenderer
 
         return items.Where(i =>
             i.Environment.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-            i.labelName.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+            i.LabelName.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
             (i.HasCaption && i.CaptionSnippet!.Contains(filter, StringComparison.OrdinalIgnoreCase)) ||
             (i.HasGraphic && i.GraphicPath!.Contains(filter, StringComparison.OrdinalIgnoreCase))
         ).ToList();
@@ -127,7 +127,7 @@ public class InteractiveRenderer
 
         var rowData = new List<string> {
             $"{style}{(isSelected ? "► " : "")}{Markup.Escape(item.Environment)}{endStyle}",
-            $"{style}{Markup.Escape(item.labelName)}{endStyle}"
+            $"{style}{Markup.Escape(item.LabelName)}{endStyle}"
         };
 
         if (showCaption)
@@ -145,23 +145,20 @@ public class InteractiveRenderer
 
     private static string FormatCaption(TexItem item)
     {
-        if (!item.HasCaption) return "-";
+        if (!item.HasCaption) 
+            return "-";
 
-        const int MaxLength = 40;
-        string snippet = item.CaptionSnippet!.Length > MaxLength
-            ? item.CaptionSnippet.Substring(0, MaxLength - 3) + "..."
-            : item.CaptionSnippet;
-
+        string snippet = FormatHelper.Truncate(item.CaptionSnippet, 40);
         return Markup.Escape(snippet);
     }
 
     private static string FormatGraphic(TexItem item, bool showFullPath)
     {
-        if (!item.HasGraphic) return "-";
-        if (showFullPath) return Markup.Escape(item.GraphicPath!);
+        if (!item.HasGraphic) 
+            return "-";
 
-        var pathParts = item.GraphicPath!.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-        return Markup.Escape(pathParts.Length > 0 ? pathParts[^1] : item.GraphicPath!);
+        string graphic = FormatHelper.FormatGraphicPath(item.GraphicPath!, showFullPath);
+        return Markup.Escape(graphic);
     }
 
     private bool HandleInput(ref string filter, ref int selectedIndex, List<TexItem> filteredItems)
@@ -191,7 +188,7 @@ public class InteractiveRenderer
                 if (filteredItems.Count > 0)
                 {
                     var selectedItem = filteredItems[selectedIndex];
-                    var sanitizedLabelName = SanitizeLabelForClipboard(selectedItem.labelName);
+                    var sanitizedLabelName = SanitizeLabelForClipboard(selectedItem.LabelName);
                     ClipboardService.SetText(sanitizedLabelName);
                     AnsiConsole.MarkupLine($"\n[bold green]Copied '{Markup.Escape(sanitizedLabelName)}' to clipboard[/]");
                     return false;
