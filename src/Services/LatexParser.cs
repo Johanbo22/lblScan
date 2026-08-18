@@ -15,7 +15,8 @@ public class LatexParser
         var cache = useCache ? cacheManager.LoadCache() : new Dictionary<string, FileCache>();
         var updatedCache = new Dictionary<string, FileCache>();
 
-        var texFiles = Directory.EnumerateFiles(rootDirectory, "*.tex", SearchOption.AllDirectories);
+        var texFiles = Directory.EnumerateFiles(rootDirectory, "*.tex", SearchOption.AllDirectories)
+            .Where(file => IsWithinRootDirectory(file, rootDirectory));
 
         int cacheHits = 0;
         int parsedFiles = 0;
@@ -174,5 +175,19 @@ public class LatexParser
         }
 
         return sb.ToString();
+    }
+
+    private static bool IsWithinRootDirectory(string filePath, string rootDirectory)
+    {
+        var absoluteFilePath = Path.GetFullPath(filePath);
+        var absoluteRootDirectory = Path.GetFullPath(rootDirectory);
+
+        if (!absoluteFilePath.StartsWith(absoluteRootDirectory, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var relativePath = Path.GetRelativePath(absoluteRootDirectory, absoluteFilePath);
+        return !relativePath.StartsWith("..", StringComparison.Ordinal);
     }
 }

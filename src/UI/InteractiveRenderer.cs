@@ -191,8 +191,9 @@ public class InteractiveRenderer
                 if (filteredItems.Count > 0)
                 {
                     var selectedItem = filteredItems[selectedIndex];
-                    ClipboardService.SetText(selectedItem.labelName);
-                    AnsiConsole.MarkupLine($"\n[bold green]Copied '{Markup.Escape(selectedItem.labelName)}' to clipboard![/]");
+                    var sanitizedLabelName = SanitizeLabelForClipboard(selectedItem.labelName);
+                    ClipboardService.SetText(sanitizedLabelName);
+                    AnsiConsole.MarkupLine($"\n[bold green]Copied '{Markup.Escape(sanitizedLabelName)}' to clipboard[/]");
                     return false;
                 }
                 break;
@@ -211,5 +212,22 @@ public class InteractiveRenderer
         }
 
         return true;
+    }
+
+    private static string SanitizeLabelForClipboard(string labelName)
+    {
+        if (string.IsNullOrEmpty(labelName))
+            return string.Empty;
+
+        var sanitized = new System.Text.StringBuilder(labelName.Length);
+        foreach (char c in labelName)
+        {
+            if (char.IsLetterOrDigit(c) || c == '_' || c == '-' || c == ':')
+            {
+                sanitized.Append(c);
+            }
+        }
+
+        return sanitized.ToString();
     }
 }

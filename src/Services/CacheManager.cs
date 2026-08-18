@@ -25,7 +25,9 @@ public class CacheManager
 
         try
         {
-            var json = File.ReadAllText(_cacheFilePath);
+            using var fileStream = new FileStream(_cacheFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var reader = new StreamReader(fileStream);
+            var json = reader.ReadToEnd();
             var container = JsonSerializer.Deserialize<CacheContainer>(json);
 
             if (container == null || container.Version != CacheVersion)
@@ -35,7 +37,15 @@ public class CacheManager
 
             return container.Data ?? new Dictionary<string, FileCache>();
         }
-        catch
+        catch (UnauthorizedAccessException)
+        {
+            return new Dictionary<string, FileCache>();
+        }
+        catch (IOException)
+        {
+            return new Dictionary<string, FileCache>();
+        }
+        catch (JsonException)
         {
             return new Dictionary<string, FileCache>();
         }
@@ -52,28 +62,40 @@ public class CacheManager
         var options = new JsonSerializerOptions { WriteIndented = false };
         var json = JsonSerializer.Serialize(container, options);
 
-        if (File.Exists(_cacheFilePath))
-        {
-            try
-            {
-                var currentAttributes = File.GetAttributes(_cacheFilePath);
-                if (currentAttributes.HasFlag(FileAttributes.Hidden))
-                {
-                    File.SetAttributes(_cacheFilePath, currentAttributes & ~FileAttributes.Hidden);
-                }
-            }
-            catch { }
-        }
-
-        File.WriteAllText(_cacheFilePath, json);
+        var tempFilePath = _cacheFilePath + ".tmp" + Guid.NewGuid().ToString("N");
 
         try
         {
-            var attr = File.GetAttributes(_cacheFilePath);
-            if (!attr.HasFlag(FileAttributes.Hidden))
+            using (var fileStream = new FileStream(tempFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
             {
-                File.SetAttributes(_cacheFilePath, attr | FileAttributes.Hidden);
+                using var writer = new StreamWriter(fileStream);
+                writer.Write(json);
             }
+
+            SetSecureFilePermissions(tempFilePath);
+
+            File.Replace(tempFilePath, _cacheFilePath, null, true);
+        }
+        catch
+        {
+            try
+            {
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+            catch { }
+
+            throw;
+        }
+    }
+
+    private void SetSecureFilePermissions(string filePath)
+    {
+        try
+        {
+            File.SetAttributes(filePath, FileAttributes.Hidden);
         }
         catch { }
     }

@@ -65,7 +65,7 @@ public class Logger
     {
         Log($"[ERROR] {message}");
         Log($"[ERROR] Exception: {ex.GetType().Name}: {ex.Message}");
-        Log($"[ERROR] StackTraced: {ex.StackTrace}");
+        Log($"[DEBUG] StackTrace: {ex.StackTrace}");
     }
 
     public void Dispose()

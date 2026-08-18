@@ -55,7 +55,7 @@ public class LatexScannerApp
         catch (Exception ex)
         {
             _logger.LogError("An error occurred during scanning", ex);
-            AnsiConsole.MarkupLine($"[red]An error occurred while scanning: {ex.Message}[/]");
+            AnsiConsole.MarkupLine($"[red]An error occurred while scanning: {Markup.Escape(ex.Message)}[/]");
         }
         finally
         {
