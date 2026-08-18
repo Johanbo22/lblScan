@@ -18,10 +18,11 @@ public static class ArgumentParser
     public static readonly CliOption TreeDepth = new("", "--tree-depth", "Limit the depth of the tree output. Only applies with --tree");
     public static readonly CliOption SortAsc = new("", "--sort-asc", "Sort labels by name in ascending order");
     public static readonly CliOption SortDesc = new("", "--sort-desc", "Sort labels by name in descending order");
+    public static readonly CliOption CsvOutput = new("", "--csv", "Export the results to a CSV file in the curret directory");
 
     public static readonly IReadOnlyList<CliOption> AllOptions = new[]
     {
-        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth, SortAsc, SortDesc
+        Help, FullPath, Caption, NoFile, NoCache, OnlyGraphics, Environment, Interactive, Tree, TreeDepth, SortAsc, SortDesc, CsvOutput
     };
 
     public static bool IsHelp(string[] args) => Help.IsMatch(args);
@@ -34,6 +35,7 @@ public static class ArgumentParser
     public static bool IsTree(string[] args) => Tree.IsMatch(args);
     public static bool IsSortAsc(string[] args) => SortAsc.IsMatch(args);
     public static bool IsSortDesc(string[] args) => SortDesc.IsMatch(args);
+    public static bool IsCsvOutput(string[] args) => CsvOutput.IsMatch(args);
     public static string? GetEnvironmentFilter(string[] args) => Environment.GetValue(args);
     public static int? GetTreeDepth(string[] args)
     {

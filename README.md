@@ -46,4 +46,5 @@ The following flags alter the provided output:
 - `--env <"name">` or `-e <"name">`: Only display labels within a specific environment type (`table`, `figure`, `subfigure`, `tikzpicture`, etc.).
 - `--sort-asc`: Sort the labels in alphebetical order (A-Z).
 - `--sort-desc`: Sort the labels in reverse alphebetical order (Z-A).
+- `--csv`: Write the contents of the scan to a CSV file.
 - `--no-cache`: Force a complete re-scan of the project. By default `lblScan` writes a hidden `.lblscan_cache.json` file and will only re parse `.tex` files that have been modified since last execution.

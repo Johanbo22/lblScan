@@ -84,7 +84,8 @@ public class LatexScannerApp
             EnvironmentFilter = ArgumentParser.Environment.GetValue(args),
             MaxTreeDepth = ParseTreeDepth(args),
             SortAscending = ArgumentParser.IsSortAsc(args),
-            SortDescending = ArgumentParser.IsSortDesc(args)
+            SortDescending = ArgumentParser.IsSortDesc(args),
+            CsvOutput = ArgumentParser.IsCsvOutput(args)
         };
     }
 
@@ -176,6 +177,11 @@ public class LatexScannerApp
                 options.HideFile
                 );
         }
+        else if (options.CsvOutput)
+        {
+            _logger.LogDebug($"Writing contents to CSV file in: {Directory.GetCurrentDirectory()}");
+            CsvExporter.ExportToCsv(items, options.ShowFullPath, options.ShowCaption, options.HideFile);
+        }
         else if (options.ShowTree)
         {
              _consoleRenderer.RenderTree(
@@ -214,4 +220,5 @@ public record ScanOptions
     public int? MaxTreeDepth { get; init; }
     public bool SortAscending { get; init; }
     public bool SortDescending { get; init; }
+    public bool CsvOutput { get; init; }
 }
