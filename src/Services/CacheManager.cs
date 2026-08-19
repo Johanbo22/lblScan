@@ -18,6 +18,18 @@ public class CacheManager
         _cacheFilePath = Path.Combine(rootDirectory, ".lblscan_cache.json");
     }
 
+    public void ClearCahe()
+    {
+        if (File.Exists(_cacheFilePath))
+        {
+            try
+            {
+                File.Delete(_cacheFilePath);
+            }
+            catch { }
+        }
+    }
+
     public Dictionary<string, FileCache> LoadCache()
     {
         if (!File.Exists(_cacheFilePath))

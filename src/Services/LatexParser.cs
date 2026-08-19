@@ -9,10 +9,16 @@ public class LatexParser
         @"\\(?:(?<begin>begin)\s*\{(?<env>[^}]+)\}|(?<end>end)\s*\{(?<env_end>[^}]+)\}|(?<label>label)\s*\{(?<lab>[^}]+)\}|(?<inc>includegraphics)\s*(?:\[[^\]]*\])?\s*\{(?<path>[^}]+)\}|(?<caption>caption)\s*(?:\[[^\]]*\])?\s*(?=\{(?<cap>(?>[^{}\\]+|\\.|\{(?<DEPTH>)|\}(?<-DEPTH>))*)(?(DEPTH)(?!))\}))",
         RegexOptions.Compiled | RegexOptions.Singleline);
 
-    public List<TexItem> ParseDirectory(string rootDirectory, bool useCache = true)
+    public List<TexItem> ParseDirectory(string rootDirectory, bool useCache = true, bool resetCache = false)
     {
         var cacheManager = new CacheManager(rootDirectory);
-        var cache = useCache ? cacheManager.LoadCache() : new Dictionary<string, FileCache>();
+
+        if (resetCache)
+        {
+            cacheManager.ClearCahe();
+        }
+
+        var cache = (useCache && !resetCache) ? cacheManager.LoadCache() : new Dictionary<string, FileCache>();
         var updatedCache = new Dictionary<string, FileCache>();
 
         var texFiles = Directory.EnumerateFiles(rootDirectory, "*.tex", SearchOption.AllDirectories)

@@ -91,6 +91,7 @@ public class LatexScannerApp
             TargetDirectory = ArgumentParser.GetTargetPath(args),
             ShowFullPath = ArgumentParser.FullPath.IsMatch(args),
             NoCache = ArgumentParser.NoCache.IsMatch(args),
+            ResetCache = ArgumentParser.ResetCache.IsMatch(args),
             ShowCaption = ArgumentParser.Caption.IsMatch(args),
             HideFile = ArgumentParser.NoFile.IsMatch(args),
             OnlyGraphics = ArgumentParser.OnlyGraphics.IsMatch(args),
@@ -115,8 +116,10 @@ public class LatexScannerApp
             .SpinnerStyle(Style.Parse("green"))
             .Start("Scanning Latex project...", ctx =>
             {
-                _logger.LogDebug("Parsing directory with cache enabled: " + !options.NoCache);
-                extractedData = _parser.ParseDirectory(rootDir, useCache: !options.NoCache);
+                bool useCache = options.ResetCache ? true : !options.NoCache;
+                _logger.LogDebug($"Parsing the directory with cache enabled: {useCache}, reset cache: {options.ResetCache}");
+
+                extractedData = _parser.ParseDirectory(rootDir, useCache: useCache, resetCache: options.ResetCache);
             });
 
         _logger.LogDebug($"{extractedData.Count} items found before filtering");

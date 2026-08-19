@@ -50,3 +50,4 @@ The following flags alter the provided output:
 - `--sort-desc`: Sort the labels in reverse alphabetical order (Z-A).
 - `--csv`: Write the contents of the scan to a CSV file.
 - `--no-cache`: Force a complete re-scan of the project. By default `lblScan` writes a hidden `.lblscan_cache.json` file and will only re parse `.tex` files that have been modified since last execution.
+- `--reset-cache`: Deletes the current cache and force a new re-scan and creating a new cache file.
